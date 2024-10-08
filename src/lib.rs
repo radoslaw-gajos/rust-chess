@@ -4,16 +4,34 @@ type Coord = (u8, u8);
 type Indices = (usize, usize);
 
 fn mve(from: Coord, to: Coord, board: Board) -> Board {
-    // getting the piece from board
-    let (column, row) = indices(from);
-    let piece = board[row][column];
     let mut board = board;
+
+    let piece = get_piece(from, &board);
+    board = remove_piece(from, board);
+    board = insert_piece(to, piece, board);
+
+    board
+}
+
+fn get_piece(coord: Coord, board: &Board) -> Piece {
+    let (column, row) = indices(coord);
+    let piece = board[row][column];
+    piece
+}
+
+fn remove_piece(coord: Coord, board: Board) -> Board {
+    let mut board = board;
+
+    let (column, row) = indices(coord);
     board[row][column] = (' ',' ');
+    board
+}
 
-    // putting the piece to target
-    let (column, row) = indices(to);
+fn insert_piece(coord: Coord, piece: Piece, board: Board) -> Board {
+    let mut board = board;
+
+    let (column, row) = indices(coord);
     board[row][column] = piece;
-
     board
 }
 
