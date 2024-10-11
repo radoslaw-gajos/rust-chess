@@ -4,6 +4,10 @@ type Coord = (u8, u8);
 type Indices = (usize, usize);
 
 fn mve(from: Coord, to: Coord, board: Board) -> Board {
+    change_position(from, to, board)
+}
+
+fn change_position(from: Coord, to: Coord, board: Board) -> Board {
     let mut board = board;
 
     let piece = get_piece(from, &board);
