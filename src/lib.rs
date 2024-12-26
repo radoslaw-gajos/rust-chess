@@ -3,6 +3,8 @@ type Board = [[Piece; 8]; 8];
 type Coord = (u8, u8);
 type Indices = (usize, usize);
 
+pub mod app;
+
 fn mve(from: Coord, to: Coord, board: Board) -> Board {
     change_position(from, to, board)
 }
