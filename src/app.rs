@@ -12,7 +12,8 @@ impl App {
     }
 
     pub async fn run(&self) {
-        let store = store::Store::new();
+        let db_url = "";
+        let store = store::Store::new(db_url).await;
         let store_filter = warp::any().map(move || store.clone());
 
         let index = warp::path("static").and(warp::fs::dir("www/static"));
