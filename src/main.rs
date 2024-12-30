@@ -1,3 +1,5 @@
+#![warn(clippy::all)]
+
 use chess::app::App;
 
 #[tokio::main]
