@@ -12,7 +12,7 @@ impl App {
     }
 
     pub async fn run(&self) {
-        let db_url = "";
+        let db_url = "postgres://mydb:@localhost:3030";
         let store = store::Store::new(db_url).await;
         let store_filter = warp::any().map(move || store.clone());
 
