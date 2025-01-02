@@ -26,23 +26,4 @@ impl Store {
             connection: db_pool,
         }
     }
-
-    pub async fn add_account(
-        self,
-        account: Account,
-    ) -> Result<bool, Error> {
-        match sqlx::query(
-            "INSERT INTO accounts (email, password) VALUES ($1, $2)",
-        )
-        .bind(account.email)
-        .bind(account.password)
-        .execute(&self.connection)
-        .await
-        {
-            Ok(_) => Ok(true),
-            Err(error) => {
-               todo!();
-            }
-        }
-    }
 }
