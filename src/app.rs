@@ -27,6 +27,7 @@ impl App {
             .and(warp::path("register"))
             .and(warp::path::end())
             .and(store_filter.clone())
+            .and(warp::body::json())
             .and_then(routes::authentication::register);
 
         let routes = index
