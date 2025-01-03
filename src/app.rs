@@ -14,6 +14,12 @@ impl App {
     pub async fn run(&self) {
         let db_url = "postgres://mydb:@localhost:3030";
         let store = store::Store::new(db_url).await;
+
+        sqlx::migrate!()
+            .run(&store.clone().connection)
+            .await
+            .expect("Cannot migrate DB");
+
         let store_filter = warp::any().map(move || store.clone());
 
         let index = warp::path("static").and(warp::fs::dir("www/static"));
