@@ -8,6 +8,11 @@ pub async fn register(
     store: Store,
     account: Account,
 ) -> Result<impl warp::Reply, warp::Rejection> {
+    let account = Account {
+        password: hash_password(account.password.as_bytes()),
+        ..account
+    };
+
     Ok(warp::reply::with_status("Todo", StatusCode::OK))
 }
 
