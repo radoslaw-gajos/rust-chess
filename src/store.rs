@@ -43,4 +43,23 @@ impl Store {
             Err(err) => todo!(),
         }
     }
+
+    pub async fn get_account(
+        self,
+        email: String,
+    ) -> Result<Account, ()> {
+        match sqlx::query("select * from accounts where email = $1")
+            .bind(email)
+            .map(|row: PgRow| Account {
+                id: Some(AccountId(row.get("id"))),
+                email: row.get("email"),
+                password: row.get("password"),
+            })
+            .fetch_one(&self.connection)
+            .await
+        {
+            Ok(account) => Ok(account),
+            Err(err) => todo!(),
+        }
+    }
 }
