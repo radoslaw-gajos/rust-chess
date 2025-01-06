@@ -13,7 +13,11 @@ pub async fn register(
         ..account
     };
 
-    Ok(warp::reply::with_status("Todo", StatusCode::OK))
+    match store.add_account(account).await
+    {
+        Ok(bool) => Ok(warp::reply::with_status("Todo", StatusCode::OK)),
+        Err(_) => todo!(),
+    }
 }
 
 fn hash_password(password: &[u8]) -> String {
