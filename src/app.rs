@@ -12,7 +12,7 @@ impl App {
     }
 
     pub async fn run(&self) {
-        let db_url = "postgres://mydb:@localhost:3030";
+        let db_url = "postgres://localhost:5432/mydb";
         let store = store::Store::new(db_url).await;
 
         sqlx::migrate!()
