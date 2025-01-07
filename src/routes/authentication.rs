@@ -1,6 +1,6 @@
 use reqwest::StatusCode;
 use crate::store::Store;
-use crate::types::account::Account;
+use crate::types::account::{Account, AccountId};
 use argon2::Config;
 use rand::Rng;
 
@@ -20,6 +20,32 @@ pub async fn register(
     }
 }
 
+pub async fn login(
+    store: Store,
+    login: Account,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    match store.get_account(login.email).await {
+        Ok(account) => {
+            match verify_password(
+                &account.password,
+                login.password.as_bytes(),
+            ) {
+                Ok(verified) => {
+                    if verified {
+                        Ok(warp::reply::json(&issue_token(
+                            account.id.expect("id not found"),
+                        )))
+                    } else {
+                        todo!();
+                    }
+                },
+                Err(_) => todo!(),
+            }
+        },
+        Err(_) => todo!(),
+    }
+}
+
 fn hash_password(password: &[u8]) -> String {
     let salt = rand::thread_rng().gen::<[u8; 32]>();
     let config = Config::default();
@@ -31,4 +57,8 @@ fn verify_password(
     password: &[u8],
 ) -> Result<bool, argon2::Error> {
     argon2::verify_encoded(hash, password)
+}
+
+fn issue_token(account_id: AccountId) -> String {
+    "todo".to_string()
 }
