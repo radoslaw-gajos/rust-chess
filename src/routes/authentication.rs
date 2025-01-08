@@ -1,9 +1,11 @@
-use reqwest::StatusCode;
-use crate::store::Store;
-use crate::types::account::{Account, AccountId};
 use argon2::Config;
 use rand::Rng;
 use chrono::prelude::*;
+use warp::{http::StatusCode, Filter};
+use std::future;
+
+use crate::store::Store;
+use crate::types::account::{Account, AccountId, Session};
 
 pub async fn register(
     store: Store,
@@ -74,4 +76,32 @@ fn issue_token(account_id: AccountId) -> String {
         .set_claim("account_id", serde_json::json!(account_id))
         .build()
         .expect("Failed to construct paseto token with builder!")
+}
+
+fn verify_token(
+    token: String,
+) -> Result<Session, ()> {
+    let token = paseto::tokens::validate_local_token(
+        &token,
+        None,
+        //todo: list of words not hardcoded
+        &"conversation terminal deficit wheat drug".as_bytes(),
+        &paseto::tokens::TimeBackend::Chrono,
+    )
+    .map_err(|_| todo!())?;
+
+    serde_json::from_value::<Session>(token)
+        .map_err(|_| todo!())
+}
+
+pub fn auth(
+) -> impl Filter<Extract = (Session,), Error = warp::Rejection> + Clone {
+    warp::header::<String>("Authorization").and_then(|token: String| {
+        let token = match verify_token(token) {
+            Ok(t) => t,
+            Err(_) => return future::ready(Err(warp::reject::reject())),
+        };
+
+        future::ready(Ok(token))
+    })
 }
