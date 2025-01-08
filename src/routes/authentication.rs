@@ -3,6 +3,7 @@ use crate::store::Store;
 use crate::types::account::{Account, AccountId};
 use argon2::Config;
 use rand::Rng;
+use chrono::prelude::*;
 
 pub async fn register(
     store: Store,
@@ -60,5 +61,17 @@ fn verify_password(
 }
 
 fn issue_token(account_id: AccountId) -> String {
-    "todo".to_string()
+    let current_date_time = Utc::now();
+    let dt = current_date_time + chrono::Duration::days(1);
+
+    paseto::tokens::PasetoBuilder::new()
+        .set_encryption_key(&Vec::from(
+            //todo: make a list not hardcoded
+            "conversation terminal deficit wheat drug".as_bytes(),
+        ))
+        .set_expiration(&dt)
+        .set_not_before(&Utc::now())
+        .set_claim("account_id", serde_json::json!(account_id))
+        .build()
+        .expect("Failed to construct paseto token with builder!")
 }
