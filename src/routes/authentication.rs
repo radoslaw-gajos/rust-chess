@@ -18,8 +18,8 @@ pub async fn register(
 
     match store.add_account(account).await
     {
-        Ok(bool) => Ok(warp::reply::with_status("Todo", StatusCode::OK)),
-        Err(_) => todo!(),
+        Ok(bool) => Ok(warp::reply::with_status("Account created successfully", StatusCode::OK)),
+        Err(e) => Err(warp::reject::custom(e)),
     }
 }
 

@@ -5,6 +5,7 @@ use sqlx::{
 use crate::types::{
     account::{Account, AccountId},
 };
+use crate::handle_errors::Error;
 
 #[derive(Debug, Clone)]
 pub struct Store {
@@ -30,7 +31,7 @@ impl Store {
     pub async fn add_account(
         self,
         account: Account,
-    ) -> Result<bool, ()> {
+    ) -> Result<bool, Error> {
         match sqlx::query(
             "insert into accounts (email, password) values ($1, $2)",
         )
@@ -40,7 +41,7 @@ impl Store {
         .await
         {
             Ok(_) => Ok(true),
-            Err(err) => todo!(),
+            Err(err) => Err(Error::DatabaseQueryError(err)),
         }
     }
 
