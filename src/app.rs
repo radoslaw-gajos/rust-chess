@@ -1,6 +1,7 @@
 use warp::Filter;
 use crate::routes;
 use crate::store;
+use crate::handle_errors;
 
 pub struct App {
 }
@@ -39,7 +40,8 @@ impl App {
 
         let routes = index
             .or(register)
-            .or(login);
+            .or(login)
+            .recover(handle_errors::return_error);
 
         warp::serve(routes).run(([127,0,0,1], 3030)).await;
     }
