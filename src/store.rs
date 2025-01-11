@@ -60,7 +60,7 @@ impl Store {
             .await
         {
             Ok(account) => Ok(account),
-            Err(err) => todo!(),
+            Err(err) => Err(Error::DatabaseQueryError(err)),
         }
     }
 }
