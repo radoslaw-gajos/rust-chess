@@ -48,7 +48,7 @@ impl Store {
     pub async fn get_account(
         self,
         email: String,
-    ) -> Result<Account, ()> {
+    ) -> Result<Account, Error> {
         match sqlx::query("select * from accounts where email = $1")
             .bind(email)
             .map(|row: PgRow| Account {

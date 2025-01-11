@@ -6,6 +6,7 @@ use std::future;
 
 use crate::store::Store;
 use crate::types::account::{Account, AccountId, Session};
+use crate::handle_errors;
 
 pub async fn register(
     store: Store,
@@ -18,7 +19,7 @@ pub async fn register(
 
     match store.add_account(account).await
     {
-        Ok(bool) => Ok(warp::reply::with_status("Account created successfully", StatusCode::OK)),
+        Ok(_) => Ok(warp::reply::with_status("Account created successfully", StatusCode::OK)),
         Err(e) => Err(warp::reject::custom(e)),
     }
 }
@@ -39,13 +40,17 @@ pub async fn login(
                             account.id.expect("id not found"),
                         )))
                     } else {
-                        todo!();
+                        Err(warp::reject::custom(
+                            handle_errors::Error::WrongPassword,
+                        ))
                     }
                 },
-                Err(_) => todo!(),
+                Err(e) => Err(warp::reject::custom(
+                    handle_errors::Error::ArgonLibraryError(e),
+                )),
             }
         },
-        Err(_) => todo!(),
+        Err(e) => Err(warp::reject::custom(e)),
     }
 }
 
