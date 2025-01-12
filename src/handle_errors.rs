@@ -18,6 +18,20 @@ impl Reject for Error {
 
 const DUPLICATE_KEY: u32 = 23505;
 
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &*self {
+            Error::DatabaseQueryError(_) => {
+                write!(f, "Cannot update, invalid data")
+            },
+            Error::WrongPassword => write!(f, "Wrong password"),
+            Error::ArgonLibraryError(_) => {
+                write!(f, "Cannot verify password")
+            },
+        }
+    }
+}
+
 pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
     if let Some(Error::DatabaseQueryError(e)) = r.find() {
         match e {
