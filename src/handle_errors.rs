@@ -11,6 +11,7 @@ pub enum Error {
     DatabaseQueryError(sqlx::Error),
     WrongPassword,
     ArgonLibraryError(ArgonError),
+    CannotDecryptToken,
 }
 
 impl Reject for Error {
@@ -28,6 +29,7 @@ impl std::fmt::Display for Error {
             Error::ArgonLibraryError(_) => {
                 write!(f, "Cannot verify password")
             },
+            Error::CannotDecryptToken => write!(f, "Cannot decrypt token error"),
         }
     }
 }

@@ -6,7 +6,7 @@ use std::future;
 
 use crate::store::Store;
 use crate::types::account::{Account, AccountId, Session};
-use crate::handle_errors;
+use crate::handle_errors::{self, Error};
 
 pub async fn register(
     store: Store,
@@ -85,7 +85,7 @@ fn issue_token(account_id: AccountId) -> String {
 
 fn verify_token(
     token: String,
-) -> Result<Session, ()> {
+) -> Result<Session, Error> {
     let token = paseto::tokens::validate_local_token(
         &token,
         None,
@@ -93,10 +93,10 @@ fn verify_token(
         &"conversation terminal deficit wi".as_bytes(),
         &paseto::tokens::TimeBackend::Chrono,
     )
-    .map_err(|_| todo!())?;
+    .map_err(|_| handle_errors::Error::CannotDecryptToken)?;
 
     serde_json::from_value::<Session>(token)
-        .map_err(|_| todo!())
+        .map_err(|_| handle_errors::Error::CannotDecryptToken)
 }
 
 pub fn auth(
