@@ -1,4 +1,6 @@
 use warp::Filter;
+use tracing_subscriber::fmt::format::FmtSpan;
+
 use crate::routes;
 use crate::store;
 use crate::handle_errors;
@@ -13,6 +15,10 @@ impl App {
     }
 
     pub async fn run(&self) {
+        let log_filter = std::env::var("RUST_LOG").unwrap_or_else(|_| {
+            "chess=warn,warp=warn".to_owned()
+        });
+
         let db_url = "postgres://localhost:5432/mydb";
         let store = store::Store::new(db_url).await;
 
@@ -22,6 +28,11 @@ impl App {
             .expect("Cannot migrate DB");
 
         let store_filter = warp::any().map(move || store.clone());
+
+        tracing_subscriber::fmt()
+            .with_env_filter(log_filter)
+            .with_span_events(FmtSpan::CLOSE)
+            .init();
 
         let index = warp::path("static").and(warp::fs::dir("www/static"));
         let register = warp::post()
@@ -41,7 +52,8 @@ impl App {
         let routes = index
             .or(register)
             .or(login)
-            .recover(handle_errors::return_error);
+            .recover(handle_errors::return_error)
+            .with(warp::trace::request());
 
         warp::serve(routes).run(([127,0,0,1], 3030)).await;
     }
