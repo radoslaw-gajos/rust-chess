@@ -41,7 +41,26 @@ impl Store {
         .await
         {
             Ok(_) => Ok(true),
-            Err(err) => Err(Error::DatabaseQueryError(err)),
+            Err(err) => {
+                tracing::event!(
+                    tracing::Level::ERROR,
+                    code = err
+                        .as_database_error()
+                        .unwrap()
+                        .code()
+                        .unwrap()
+                        .parse::<i32>()
+                        .unwrap(),
+                    db_message =
+                        err.as_database_error().unwrap().message(),
+                    constraint = err
+                        .as_database_error()
+                        .unwrap()
+                        .constraint()
+                        .unwrap()
+                );
+                Err(Error::DatabaseQueryError(err))
+            },
         }
     }
 
