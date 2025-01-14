@@ -5,6 +5,7 @@ use warp::{
     http::StatusCode,
     reject::Reject,
 };
+use tracing::{event, instrument, Level};
 
 #[derive(Debug)]
 pub enum Error {
@@ -34,8 +35,11 @@ impl std::fmt::Display for Error {
     }
 }
 
+#[instrument]
 pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
     if let Some(Error::DatabaseQueryError(e)) = r.find() {
+        event!(Level::ERROR, "Database query error");
+
         match e {
             sqlx::Error::Database(err) => {
                 if err.code().unwrap().parse::<u32>().unwrap()
@@ -57,11 +61,13 @@ pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
             )),
         }
     } else if let Some(Error::WrongPassword) = r.find() {
+        event!(Level::ERROR, "Entered wrong password");
         Ok(warp::reply::with_status(
             "Wrong E-mail/Password combination".to_string(),
             StatusCode::UNAUTHORIZED,
         ))
     } else {
+        event!(Level::ERROR, "Internal server error");
         Ok(warp::reply::with_status(
             "Internal Server Error".to_string(),
             StatusCode::INTERNAL_SERVER_ERROR,
