@@ -6,6 +6,7 @@ use crate::types::{
     account::{Account, AccountId},
 };
 use crate::handle_errors::Error;
+use tracing::{Level, event};
 
 #[derive(Debug, Clone)]
 pub struct Store {
@@ -42,8 +43,8 @@ impl Store {
         {
             Ok(_) => Ok(true),
             Err(err) => {
-                tracing::event!(
-                    tracing::Level::ERROR,
+                event!(
+                    Level::ERROR,
                     code = err
                         .as_database_error()
                         .unwrap()
@@ -80,7 +81,7 @@ impl Store {
         {
             Ok(account) => Ok(account),
             Err(err) => {
-                tracing::event!(tracing::Level::ERROR, "{:?}", err);
+                event!(Level::ERROR, "{:?}", err);
                 Err(Error::DatabaseQueryError(err))
             },
         }
