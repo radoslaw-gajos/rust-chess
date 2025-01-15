@@ -79,7 +79,10 @@ impl Store {
             .await
         {
             Ok(account) => Ok(account),
-            Err(err) => Err(Error::DatabaseQueryError(err)),
+            Err(err) => {
+                tracing::event!(tracing::Level::ERROR, "{:?}", err);
+                Err(Error::DatabaseQueryError(err))
+            },
         }
     }
 }
