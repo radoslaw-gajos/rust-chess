@@ -63,8 +63,8 @@ impl App {
             .or(register)
             .or(login)
             .with(cors)
-            .recover(handle_errors::return_error)
-            .with(warp::trace::request());
+            .with(warp::trace::request())
+            .recover(handle_errors::return_error);
 
         warp::serve(routes).run(([127,0,0,1], 3030)).await;
     }
