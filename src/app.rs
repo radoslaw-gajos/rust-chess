@@ -1,4 +1,4 @@
-use warp::Filter;
+use warp::{http::Method, Filter};
 use tracing_subscriber::fmt::format::FmtSpan;
 
 use crate::routes;
@@ -34,6 +34,16 @@ impl App {
             .with_span_events(FmtSpan::CLOSE)
             .init();
 
+        let cors = warp::cors()
+            .allow_any_origin() // todo: change for production
+            .allow_header("content-type")
+            .allow_methods(&[
+                Method::PUT,
+                Method::DELETE,
+                Method::POST,
+                Method::GET,
+            ]);
+
         let index = warp::path("static").and(warp::fs::dir("www/static"));
         let register = warp::post()
             .and(warp::path("register"))
@@ -52,6 +62,7 @@ impl App {
         let routes = index
             .or(register)
             .or(login)
+            .with(cors)
             .recover(handle_errors::return_error)
             .with(warp::trace::request());
 
