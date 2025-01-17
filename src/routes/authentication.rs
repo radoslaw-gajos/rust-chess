@@ -90,7 +90,7 @@ fn verify_token(
         &token,
         None,
         //todo: list of words not hardcoded
-        &"conversation terminal deficit wi".as_bytes(),
+        "conversation terminal deficit wi".as_bytes(),
         &paseto::tokens::TimeBackend::Chrono,
     )
     .map_err(|_| handle_errors::Error::CannotDecryptToken)?;
