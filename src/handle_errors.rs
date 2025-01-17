@@ -22,7 +22,7 @@ const DUPLICATE_KEY: u32 = 23505;
 
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match &*self {
+        match self {
             Error::DatabaseQueryError(_) => {
                 write!(f, "Cannot update, invalid data")
             },
