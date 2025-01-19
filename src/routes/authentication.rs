@@ -2,7 +2,7 @@ use argon2::Config;
 use rand::Rng;
 use chrono::prelude::*;
 use warp::{http::StatusCode, Filter};
-use std::future;
+use std::{env, future};
 
 use crate::store::Store;
 use crate::types::account::{Account, AccountId, Session};
@@ -70,11 +70,11 @@ fn verify_password(
 fn issue_token(account_id: AccountId) -> String {
     let current_date_time = Utc::now();
     let dt = current_date_time + chrono::Duration::days(1);
+    let key = env::var("PASETO_KEY").unwrap();
 
     paseto::tokens::PasetoBuilder::new()
         .set_encryption_key(&Vec::from(
-            //todo: make a list not hardcoded
-            "conversation terminal deficit wi".as_bytes(),
+            key.as_bytes(),
         ))
         .set_expiration(&dt)
         .set_not_before(&Utc::now())
@@ -86,11 +86,11 @@ fn issue_token(account_id: AccountId) -> String {
 fn verify_token(
     token: String,
 ) -> Result<Session, Error> {
+    let key = env::var("PASETO_KEY").unwrap();
     let token = paseto::tokens::validate_local_token(
         &token,
         None,
-        //todo: list of words not hardcoded
-        "conversation terminal deficit wi".as_bytes(),
+        key.as_bytes(),
         &paseto::tokens::TimeBackend::Chrono,
     )
     .map_err(|_| handle_errors::Error::CannotDecryptToken)?;

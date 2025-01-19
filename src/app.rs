@@ -1,5 +1,7 @@
 use warp::{http::Method, Filter};
 use tracing_subscriber::fmt::format::FmtSpan;
+use dotenv;
+use std::env;
 
 use crate::routes;
 use crate::store;
@@ -15,6 +17,12 @@ impl App {
     }
 
     pub async fn run(&self) {
+        dotenv::dotenv().ok();
+
+        if let Err(_) = env::var("PASETO_KEY") {
+            panic!("PASETO key not set");
+        }
+
         let log_filter = std::env::var("RUST_LOG").unwrap_or_else(|_| {
             "chess=warn,warp=warn".to_owned()
         });
