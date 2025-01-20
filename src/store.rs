@@ -9,6 +9,12 @@ use crate::handle_errors::Error;
 use tracing::{Level, event};
 
 #[derive(Debug, Clone)]
+pub struct Game {
+    white: AccountId,
+    black: AccountId,
+}
+
+#[derive(Debug, Clone)]
 pub struct Store {
     pub connection: PgPool,
 }
