@@ -1,3 +1,4 @@
+use uuid::Uuid;
 use sqlx::{
     postgres::{PgPool, PgPoolOptions, PgRow},
     Row,
@@ -10,6 +11,7 @@ use tracing::{Level, event};
 
 #[derive(Debug, Clone)]
 pub struct Game {
+    uuid: Uuid,
     white: AccountId,
     black: AccountId,
 }
