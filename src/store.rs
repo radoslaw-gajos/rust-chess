@@ -94,4 +94,21 @@ impl Store {
             },
         }
     }
+
+    pub async fn new_game(
+        self
+    ) -> Result<Uuid, Error> {
+        match sqlx::query("SELECT uuid FROM games WHERE black IS NULL OR white IS NULL")
+            .map(|row: PgRow| Uuid::parse_str(row.get("uuid")))
+            .fetch_one(&self.connection)
+            .await
+        {
+            Ok(uuid) => Ok(uuid.unwrap()),
+            Err(err) => {
+                // TODO: new uuid when fetched none
+                event!(Level::ERROR, "{:?}", err);
+                Err(Error::DatabaseQueryError(err))
+            },
+        }
+    }
 }
