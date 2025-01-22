@@ -96,7 +96,8 @@ impl Store {
     }
 
     pub async fn new_game(
-        self
+        self,
+        account: Account,
     ) -> Result<Uuid, Error> {
         match sqlx::query("SELECT uuid FROM games WHERE black IS NULL OR white IS NULL")
             .map(|row: PgRow| Uuid::parse_str(row.get("uuid")))
@@ -105,7 +106,26 @@ impl Store {
         {
             Ok(uuid) => Ok(uuid.unwrap()),
             Err(err) => {
-                // TODO: new uuid when fetched none
+                self.create_game(account).await
+            },
+        }
+    }
+
+    pub async fn create_game(
+        self,
+        account: Account,
+    ) -> Result<Uuid, Error> {
+        let uuid = Uuid::new_v4();
+
+        match sqlx::query("INSERT INTO games (uuid, white) VALUES ($1, $2) RETURNING uuid")
+            .bind(uuid.to_string())
+            .bind(account.id.unwrap().0)
+            .map(|row: PgRow| Uuid::parse_str(row.get("uuid")))
+            .fetch_one(&self.connection)
+            .await
+        {
+            Ok(uuid) => Ok(uuid.unwrap()),
+            Err(err) => {
                 event!(Level::ERROR, "{:?}", err);
                 Err(Error::DatabaseQueryError(err))
             },
