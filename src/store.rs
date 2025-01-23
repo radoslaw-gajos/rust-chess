@@ -5,16 +5,10 @@ use sqlx::{
 };
 use crate::types::{
     account::{Account, AccountId},
+    game::{Game},
 };
 use crate::handle_errors::Error;
 use tracing::{Level, event};
-
-#[derive(Debug, Clone)]
-pub struct Game {
-    uuid: Uuid,
-    white: AccountId,
-    black: AccountId,
-}
 
 #[derive(Debug, Clone)]
 pub struct Store {
