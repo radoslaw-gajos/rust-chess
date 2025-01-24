@@ -91,7 +91,7 @@ impl Store {
 
     pub async fn new_game(
         self,
-        account: Account,
+        account: AccountId,
     ) -> Result<Uuid, Error> {
         match sqlx::query("SELECT uuid FROM games WHERE black IS NULL OR white IS NULL")
             .map(|row: PgRow| Uuid::parse_str(row.get("uuid")))
