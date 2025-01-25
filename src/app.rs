@@ -67,9 +67,18 @@ impl App {
             .and(warp::body::json())
             .and_then(routes::authentication::login);
 
+        let new_game = warp::post()
+            .and(warp::path("game"))
+            .and(warp::path::end())
+            .and(routes::authentication::auth())
+            .and(store_filter.clone())
+            .and_then(routes::game_route::new_game);
+
+
         let routes = index
             .or(register)
             .or(login)
+            .or(new_game)
             .with(cors)
             .with(warp::trace::request())
             .recover(handle_errors::return_error);
