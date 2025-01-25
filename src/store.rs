@@ -107,13 +107,13 @@ impl Store {
 
     pub async fn create_game(
         self,
-        account: Account,
+        account_id: AccountId,
     ) -> Result<Uuid, Error> {
         let uuid = Uuid::new_v4();
 
         match sqlx::query("INSERT INTO games (uuid, white) VALUES ($1, $2) RETURNING uuid")
             .bind(uuid.to_string())
-            .bind(account.id.unwrap().0)
+            .bind(account_id.0)
             .map(|row: PgRow| Uuid::parse_str(row.get("uuid")))
             .fetch_one(&self.connection)
             .await
