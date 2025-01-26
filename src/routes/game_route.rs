@@ -1,7 +1,7 @@
-use warp::{http::StatusCode, Filter};
+use warp::http::StatusCode;
 
 use crate::store::Store;
-use crate::types::account::{AccountId, Session};
+use crate::types::account::Session;
 
 pub async fn new_game(
     session: Session,
