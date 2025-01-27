@@ -9,7 +9,7 @@ pub async fn new_game(
 ) -> Result<impl warp::Reply, warp::Rejection> {
     match store.new_game(session.account_id).await
     {
-        Ok(_) => Ok(warp::reply::with_status("Game created successfully", StatusCode::OK)),
+        Ok(game_uuid) => Ok(warp::reply::json(&game_uuid.to_string())),
         Err(e) => Err(warp::reject::custom(e)),
     }
 }
