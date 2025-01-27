@@ -1,5 +1,3 @@
-use warp::http::StatusCode;
-
 use crate::store::Store;
 use crate::types::account::Session;
 
