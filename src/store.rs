@@ -5,6 +5,7 @@ use sqlx::{
 };
 use crate::types::{
     account::{Account, AccountId},
+    game::{Game},
 };
 use crate::handle_errors::Error;
 use tracing::{Level, event};
@@ -123,5 +124,12 @@ impl Store {
                 Err(Error::DatabaseQueryError(err))
             },
         }
+    }
+
+    pub async fn get_awaiting_game(
+        self,
+        account_id: AccountId,
+    ) -> Result<Game, Error> {
+        todo!();
     }
 }
