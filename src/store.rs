@@ -129,7 +129,19 @@ impl Store {
     pub async fn get_awaiting_game(
         self,
         account_id: AccountId,
-    ) -> Result<Game, Error> {
-        todo!();
+    ) -> Result<Option<Game>, Error> {
+        match sqlx::query("SELECT uuid FROM games WHERE white IS NULL OR black IS NULL")
+            .map(|row: PgRow| Game {
+                uuid: Uuid::parse_str(row.get("uuid")),
+            })
+            .fetch_optional(&self.connection)
+            .await
+        {
+            Ok(uuid) => Ok(uuid.unwrap()),
+            Err(err) => {
+                event!(Level::ERROR, "{:?}", err);
+                Err(Error::DatabaseQueryError(err))
+            },
+        }
     }
 }
