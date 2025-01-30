@@ -130,7 +130,7 @@ impl Store {
         self,
         account_id: AccountId,
     ) -> Result<Option<Game>, Error> {
-        match sqlx::query("SELECT uuid FROM games WHERE white IS NULL OR black IS NULL")
+        match sqlx::query("SELECT uuid FROM games WHERE white IS NULL OR black IS NULL LIMIT 1")
             .map(|row: PgRow| Game {
                 uuid: Uuid::parse_str(row.get("uuid")),
             })
