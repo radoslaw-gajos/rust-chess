@@ -126,11 +126,11 @@ impl Store {
         }
     }
 
-    pub async fn get_awaiting_game(
+    pub async fn get_awaiting_game_white(
         self,
         account_id: AccountId,
     ) -> Result<Option<Game>, Error> {
-        match sqlx::query("SELECT uuid FROM games WHERE white IS NULL OR black IS NULL LIMIT 1")
+        match sqlx::query("UPDATE games SET white = $1 WHERE WHITE IS NULL LIMIT 1 RETURNING uuid")
             .map(|row: PgRow| Game {
                 uuid: Uuid::parse_str(row.get("uuid")),
             })
