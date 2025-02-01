@@ -130,8 +130,10 @@ impl Store {
         self,
         account_id: AccountId,
     ) -> Result<Option<Game>, Error> {
-        match sqlx::query("UPDATE games SET white = $1 WHERE WHITE IS NULL LIMIT 1 RETURNING uuid")
+        match sqlx::query("UPDATE games SET white = $1 WHERE WHITE IS NULL LIMIT 1 RETURNING white, black, uuid")
             .map(|row: PgRow| Game {
+                white: row.get("white"),
+                black: row.get("black"),
                 uuid: Uuid::parse_str(row.get("uuid")),
             })
             .fetch_optional(&self.connection)
