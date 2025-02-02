@@ -146,4 +146,25 @@ impl Store {
             },
         }
     }
+
+    pub async fn get_awaiting_game_black(
+        self,
+        account_id: AccountId,
+    ) -> Result<Option<Game>, Error> {
+        match sqlx::query("UPDATE games SET black = $1 WHERE BLACK IS NULL LIMIT 1 RETURNING white, black, uuid")
+            .map(|row: PgRow| Game {
+                white: row.get("white"),
+                black: row.get("black"),
+                uuid: Uuid::parse_str(row.get("uuid")),
+            })
+            .fetch_optional(&self.connection)
+            .await
+        {
+            Ok(uuid) => Ok(uuid.unwrap()),
+            Err(err) => {
+                event!(Level::ERROR, "{:?}", err);
+                Err(Error::DatabaseQueryError(err))
+            },
+        }
+    }
 }
