@@ -111,6 +111,14 @@ impl Store {
     ) -> Result<Uuid, Error> {
         let uuid = Uuid::new_v4();
 
+        // todo: pick colour based on the previous game
+        match self.get_awaiting_game_white(account_id) {
+            Ok(game) => Ok(game.uuid),
+            Err(err) => {
+                todo!();
+            },
+        }
+
         match sqlx::query("INSERT INTO games (uuid, white) VALUES ($1, $2) RETURNING uuid")
             .bind(uuid.to_string())
             .bind(account_id.0)
