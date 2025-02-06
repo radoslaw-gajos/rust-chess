@@ -113,7 +113,11 @@ impl Store {
 
         // todo: pick colour based on the previous game
         match self.get_awaiting_game_white(account_id).await {
-            Ok(game) => return Ok(game.uuid),
+            Ok(game) => {
+                if let Some(game) = game {
+                    return Ok(game.uuid);
+                }
+            },
             Err(err) => {
                 todo!();
             },
