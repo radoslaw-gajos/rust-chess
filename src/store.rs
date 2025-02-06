@@ -112,14 +112,14 @@ impl Store {
         let uuid = Uuid::new_v4();
 
         // todo: pick colour based on the previous game
-        match self.get_awaiting_game_white(account_id) {
+        match self.get_awaiting_game_white(account_id).await {
             Ok(game) => return Ok(game.uuid),
             Err(err) => {
                 todo!();
             },
         }
 
-        match self.get_awaiting_game_black(account_id) {
+        match self.get_awaiting_game_black(account_id).await {
             Ok(game) => return Ok(game.uuid),
             Err(err) => {
                 todo!();
