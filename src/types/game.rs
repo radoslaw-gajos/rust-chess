@@ -3,7 +3,7 @@ use crate::types::account::AccountId;
 
 #[derive(Debug, Clone)]
 pub struct Game {
-    uuid: Uuid,
-    white: AccountId,
-    black: AccountId,
+    pub uuid: Uuid,
+    pub white: AccountId,
+    pub black: AccountId,
 }
