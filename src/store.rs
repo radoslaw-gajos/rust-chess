@@ -91,22 +91,6 @@ impl Store {
 
     pub async fn new_game(
         self,
-        account: AccountId,
-    ) -> Result<Uuid, Error> {
-        match sqlx::query("SELECT uuid FROM games WHERE black IS NULL OR white IS NULL")
-            .map(|row: PgRow| Uuid::parse_str(row.get("uuid")))
-            .fetch_one(&self.connection)
-            .await
-        {
-            Ok(uuid) => Ok(uuid.unwrap()),
-            Err(err) => {
-                self.create_game(account).await
-            },
-        }
-    }
-
-    pub async fn create_game(
-        self,
         account_id: AccountId,
     ) -> Result<Uuid, Error> {
         let uuid = Uuid::new_v4();
