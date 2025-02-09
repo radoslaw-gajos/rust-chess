@@ -96,7 +96,7 @@ impl Store {
         let uuid = Uuid::new_v4();
 
         // todo: pick colour based on the previous game
-        match self.clone().get_awaiting_game_white(account_id).await {
+        match self.clone().get_awaiting_game_white(account_id.clone()).await {
             Ok(game) => {
                 if let Some(game) = game {
                     return Ok(game.uuid);
