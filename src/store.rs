@@ -107,7 +107,7 @@ impl Store {
             },
         }
 
-        match self.get_awaiting_game_black(account_id.clone()).await {
+        match self.clone().get_awaiting_game_black(account_id.clone()).await {
             Ok(game) => {
                 if let Some(game) = game {
                     return Ok(game.uuid);
