@@ -141,7 +141,7 @@ impl Store {
             .map(|row: PgRow| Game {
                 white: AccountId(row.get("white")),
                 black: AccountId(row.get("black")),
-                uuid: Uuid::parse_str(row.get("uuid")),
+                uuid: Uuid::parse_str(row.get("uuid")).expect("Uuid should be present for all games"),
             })
             .fetch_optional(&self.connection)
             .await
