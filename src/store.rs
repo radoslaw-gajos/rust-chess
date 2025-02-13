@@ -146,7 +146,7 @@ impl Store {
             .fetch_optional(&self.connection)
             .await
         {
-            Ok(uuid) => Ok(uuid.unwrap()),
+            Ok(game) => Ok(game),
             Err(err) => {
                 event!(Level::ERROR, "{:?}", err);
                 Err(Error::DatabaseQueryError(err))
